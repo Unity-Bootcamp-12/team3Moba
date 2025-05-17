@@ -139,13 +139,18 @@ public class MatchManager : MonoSingleton<MatchManager>
     int count = 0;
     IEnumerator CoSpawnItem()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(3f);
         Vector3 positionTemp = spawnItemPositions[UnityEngine.Random.Range(0,4)];
         float angle = (2f * Mathf.PI / 17) * currentSpawnCount;
         int radius = 4;
         positionTemp.x += Mathf.Cos(angle) * radius;
         positionTemp.z += Mathf.Sin(angle) * radius;
         GameObject item = PoolManager.Instance.SpawnObject("TestItem", positionTemp);
+        ExpItem expItem = item.GetComponent<ExpItem>();
+        if(expItem != null)
+        {
+            expItem.Initialize("TestItem", 3, playerChampion.OnGetExpItem);
+        }
 
         if(item != null)
         {
@@ -154,6 +159,11 @@ public class MatchManager : MonoSingleton<MatchManager>
 
         isSpawned = false;
         count = (count + 1) % 21;
+    }
+
+    public void DecreaseExpItemCount()
+    {
+        Mathf.Min(0, --currentSpawnCount);
     }
 
     public void OnChampionDeadComplete()

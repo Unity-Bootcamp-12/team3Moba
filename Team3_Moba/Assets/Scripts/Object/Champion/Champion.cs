@@ -29,6 +29,10 @@ public class Champion : GameEntity
     public event Action<float, float> OnExpChanged;
     public event Action<int> OnLevelChanged;
 
+    private int currentLevel;
+    private int currentExp;
+    private int levelExp;
+
     public SkillTable GetSkillData(SkillInputType skillInputType)
     {
         if (skillDict.ContainsKey(skillInputType) == false)
@@ -67,6 +71,9 @@ public class Champion : GameEntity
     {
         base.InitData(data);
         moveSpeed = data.move_speed;
+        currentExp = data.current_exp;
+        currentLevel = 0;
+        levelExp = 10;
         agent.speed = moveSpeed;
         agent.angularSpeed = 10000f;
         agent.acceleration = 10000f;
@@ -199,5 +206,17 @@ public class Champion : GameEntity
 
         OnDeadComplete?.Invoke();
         agent.enabled = true;
+    }
+
+    public void OnGetExpItem(int expAmount)
+    {
+        currentExp += expAmount;
+        if(currentExp >= levelExp)
+        {
+            currentLevel++;
+            //임시값 하드코딩
+            levelExp += 10;
+            Logger.Log($"Level : {currentLevel} \n Exp : {currentExp} \n LevelMaxExp : {levelExp}");
+        }
     }
 } 
